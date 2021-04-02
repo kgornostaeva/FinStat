@@ -33,43 +33,27 @@ struct Stock: Codable, Identifiable {
 }
 
 struct FinanceDataStore: Codable {
-    var finance: Finance
+    var quotes: Result
     
     enum CodingKeys: String, CodingKey {
-     case finance = "finance"
+        case quotes = "quoteResponse"
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        finance = try container.decode(Finance.self, forKey: .finance)
-    }
-}
-
-struct Finance: Codable {
-    var result: [Result]
-    
-    enum CodingKeys: String, CodingKey {
-        case result = "result"
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        result = try container.decode([Result].self, forKey: .result)
+        quotes = try container.decode(Result.self, forKey: .quotes)
     }
 }
 
 struct Result: Codable {
-    var count: Int
-    var quotes: [Stock]
+    var stocks: [Stock]
     
     enum CodingKeys: String, CodingKey {
-        case count = "count"
-        case quotes = "quotes"
+        case stocks = "result"
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        count = try container.decode(Int.self, forKey: .count)
-        quotes = try container.decode([Stock].self, forKey: .quotes)
+        stocks = try container.decode([Stock].self, forKey: .stocks)
     }
 }

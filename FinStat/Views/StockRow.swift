@@ -11,6 +11,7 @@ import SwiftUI
 struct StockRow: View {
     @EnvironmentObject var favorites: Favorites
     var stock: Stock
+    @Binding var color: Bool
 
     var body: some View {
         HStack {
@@ -23,7 +24,7 @@ struct StockRow: View {
             }
 
             Image(systemName: self.favorites.contains(stock) ? "star.fill" : "star")
-                    .foregroundColor(self.favorites.contains(stock) ? Color(red: 0.29, green: 0.43, blue: 0.11) : Color.gray)
+                .foregroundColor(self.favorites.contains(stock) ? Color.yellow : Color.gray)
             
             VStack (alignment: .leading) {
                 Text(stock.id)
@@ -51,9 +52,10 @@ struct StockRow: View {
                 .foregroundColor(stock.change >= 0 ? Color(red: 0.29, green: 0.43, blue: 0.11) : Color.red)
             }
         }
-        .padding()
+        .padding(.horizontal, 10)
         .frame(width: 350, height: 70)
-        .background(Color(red: 0.99, green: 0.89, blue: 0.51), alignment: .leading)
+//        .background(Color(red: 0.99, green: 0.89, blue: 0.51), alignment: .leading)
+            .background(self.color ? Color.clear : Color(.systemGray6))
         .cornerRadius(15)
     }
 }
@@ -63,7 +65,7 @@ struct StockRow_Previews: PreviewProvider {
     static var stocks = ModelData().stocks
 
     static var previews: some View {
-        StockRow(stock: stocks[0])
+        StockRow(stock: stocks[0], color: .constant(true))
         .environmentObject(Favorites())
     }
 }

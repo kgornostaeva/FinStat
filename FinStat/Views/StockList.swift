@@ -14,6 +14,7 @@ struct StockList: View {
     @EnvironmentObject var favorites: Favorites
     
     @State private var showFavoritesOnly = false
+    @State private var color = false
     @State private var searchText = ""
     
     var favoriteStocks: [Stock] {
@@ -21,25 +22,40 @@ struct StockList: View {
               (!showFavoritesOnly || favorites.contains(stock))
           }
       }
+    
+    init() {
+        //this changes the "thumb" that selects between items
+        UISegmentedControl.appearance().selectedSegmentTintColor = .white
+        //and this changes the color for the whole "bar" background
+        UISegmentedControl.appearance().backgroundColor = .white
 
+        //this will change the font size
+        UISegmentedControl.appearance().setTitleTextAttributes([.font : UIFont.preferredFont(forTextStyle: .largeTitle)], for: .normal)
+
+        //these lines change the text color for various states
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor : UIColor.blue], for: .selected)
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor : UIColor.blue], for: .normal)
+    }
+    
     var body: some View {
         NavigationView {
             List {
                 SearchBar(text: $searchText)
-                Toggle(isOn: $showFavoritesOnly) {
-                    Text("Favorites only")
-                        .font(.headline)
-                        .foregroundColor(.gray)
-                }
-                
-                ForEach(favoriteStocks.filter({ searchText.isEmpty ? true : $0.name.lowercased().contains(searchText) ||  $0.id.lowercased().contains(searchText)})) {stock in
-                     StockRow(stock: stock)
+                Picker("", selection: $showFavoritesOnly, content: {
+                               Text("Stocks").tag(false)
+                               Text("Favorites").tag(true)
+                           })
+                    .pickerStyle(SegmentedPickerStyle())
+                ForEach(favoriteStocks.filter({ searchText.isEmpty ? true : $0.name.lowercased().contains(searchText) ||  $0.id.lowercased().contains(searchText)})) { stock in
+                    StockRow(stock: stock, color: self.$color)
                 }
             }
-            .onAppear(perform: modelData.getLatestInfo)
-            .onAppear{
+            .onAppear {
+                self.modelData.getLatestInfo()
+                self.favorites.load()
                 UITableView.appearance().separatorStyle = .none
             }
+        .navigationBarHidden(true)
         .navigationBarTitle("Stocks")
         }
     }

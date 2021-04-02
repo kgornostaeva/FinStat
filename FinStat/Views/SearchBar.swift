@@ -17,22 +17,22 @@ struct SearchBar: View {
 
     var body: some View {
         HStack {
-
-             TextField("Search ...", text: $text)
+             TextField("Find company or ticker", text: $text)
                 .autocapitalization(.none)
                 .padding(7)
-                .padding(.horizontal, 25)
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
+                .padding(.horizontal, 30)
+                .font(.subheadline)
+                .overlay(RoundedRectangle(cornerRadius: 50).stroke(Color.black, lineWidth: 1))
                 .overlay(
                     HStack {
                         Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 8)
+                            .padding(.leading, 15)
                     }
                 )
-                .padding(.horizontal, 10)
+                .padding(.horizontal, 5)
+                .padding(.top, 30)
+                .padding(.vertical, 10)
                 .onTapGesture {
                     self.isEditing = true
                 }
@@ -46,6 +46,7 @@ struct SearchBar: View {
                     Text("Cancel")
                 }
                 .padding(.trailing, 10)
+                .padding(.top, 30)
                 .animation(.default)
             }
         }

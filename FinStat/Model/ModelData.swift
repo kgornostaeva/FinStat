@@ -15,7 +15,7 @@ final class ModelData: ObservableObject {
     @Published var stocks = [Stock]()
 
 func getLatestInfo() {
-    let path: String = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-trending-tickers"
+    let path: String = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=AMD%2CIBM%2CAAPL%2CNVDA%2CNFLX%2CGOOGL%2CSNGS%2CDIS%2CV%2CAMZN%2CORCL%2CMA%2CMSFT%2CTSLA%2CFB%2CCHMF%2CGAZP"
     
     guard let url = URL(string: path) else {
         return
@@ -51,7 +51,7 @@ func parseJsonData(data: Data) -> [Stock] {
     let decoder = JSONDecoder()
     do {
         let financeDataStore = try decoder.decode(FinanceDataStore.self, from: data)
-        stocks = financeDataStore.finance.result[0].quotes
+        stocks = financeDataStore.quotes.stocks
     } catch {
         print(error)
     }
