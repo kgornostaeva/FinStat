@@ -12,7 +12,7 @@ class Favorites: ObservableObject {
     @Published var favorites = [Stock]()
     
     let headers = [
-        "x-rapidapi-key": "ff35927267msh3f7dabb094a67e9p1ba5a6jsnd279c449aece",
+        "x-rapidapi-key": "a1a8ea74d9msh7ea0a4b58d258d4p1732e2jsnb6fd74c866c4",
         "x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
     ]
     

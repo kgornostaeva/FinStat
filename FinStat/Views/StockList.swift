@@ -50,11 +50,11 @@ struct StockList: View {
                     }.padding(.leading)
                     
                     PageView(viewData: PageViewData(pageName: "Search"))
-//                        .onAppear {
-//                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                                self.searches.getLatestInfo(self.searchText)
-//                            }
-//                    }
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                self.searches.getLatestInfo(self.searchText)
+                            }
+                    }
                 }
         }
         .navigationBarHidden(true)

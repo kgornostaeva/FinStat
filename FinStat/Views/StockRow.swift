@@ -19,9 +19,9 @@ struct StockRow: View {
                     self.favorites.remove(self.stock)
                 } else {
                     self.favorites.add(self.stock)
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                        self.favorites.getFavInfo()
-//                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.favorites.getFavInfo()
+                    }
                 }
             }
 

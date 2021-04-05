@@ -27,8 +27,7 @@ struct SwiperView: View {
                         PageView(viewData: viewData)
                             .environmentObject(self.modelData)
                             .environmentObject(self.favorites)
-                            .frame(width: geometry.size.width,
-                                   height: geometry.size.height)
+                            .frame(width: geometry.size.width, height: geometry.size.height)
                     }
                 }
             }
@@ -53,6 +52,7 @@ struct SwiperView: View {
                         }
                     })
             )
+            .padding(.trailing, 10)
         }
     }
 }

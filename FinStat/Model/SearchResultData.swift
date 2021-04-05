@@ -5,9 +5,11 @@
 //  Created by Ekaterina Gornostaewa on 4/5/21.
 //  Copyright © 2021 Ekaterina Gornostaeva. All rights reserved.
 //
+// Used API: yahoo finance from rapidapi.com
+// My free account allows only 500 requests per month
+// If the amount of requests exceeds this value you can replace x-rapidapi-key in headers below by your new own key :)
 
 import Foundation
-
 import Combine
 import SwiftUI
 
@@ -16,7 +18,7 @@ final class SearchResultData: ObservableObject {
     var tickers = [SearchResult]()
     
     let headers = [
-        "x-rapidapi-key": "ff35927267msh3f7dabb094a67e9p1ba5a6jsnd279c449aece",
+        "x-rapidapi-key": "a1a8ea74d9msh7ea0a4b58d258d4p1732e2jsnb6fd74c866c4",
         "x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
     ]
     
