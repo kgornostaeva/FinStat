@@ -12,53 +12,54 @@ import Combine
 struct StockList: View {
     @EnvironmentObject var modelData: ModelData
     @EnvironmentObject var favorites: Favorites
-    
-    @State private var showFavoritesOnly = false
-    @State private var color = false
+    @EnvironmentObject var searches: SearchResultData
+
     @State private var searchText = ""
+    @State private var index: Int = 0
     
-    var favoriteStocks: [Stock] {
-          modelData.stocks.filter { stock in
-              (!showFavoritesOnly || favorites.contains(stock))
-          }
-      }
-    
-    init() {
-        //this changes the "thumb" that selects between items
-        UISegmentedControl.appearance().selectedSegmentTintColor = .white
-        //and this changes the color for the whole "bar" background
-        UISegmentedControl.appearance().backgroundColor = .white
-
-        //this will change the font size
-        UISegmentedControl.appearance().setTitleTextAttributes([.font : UIFont.preferredFont(forTextStyle: .largeTitle)], for: .normal)
-
-        //these lines change the text color for various states
-        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor : UIColor.blue], for: .selected)
-        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor : UIColor.blue], for: .normal)
-    }
+    let pages: [PageViewData] = [
+        PageViewData(pageName: "Stocks"),
+        PageViewData(pageName: "Favourite"),
+    ]
     
     var body: some View {
         NavigationView {
-            List {
+             VStack {
                 SearchBar(text: $searchText)
-                Picker("", selection: $showFavoritesOnly, content: {
-                               Text("Stocks").tag(false)
-                               Text("Favorites").tag(true)
-                           })
-                    .pickerStyle(SegmentedPickerStyle())
-                ForEach(favoriteStocks.filter({ searchText.isEmpty ? true : $0.name.lowercased().contains(searchText) ||  $0.id.lowercased().contains(searchText)})) { stock in
-                    StockRow(stock: stock, color: self.$color)
+                
+                if searchText.isEmpty {
+                    HStack(alignment: .firstTextBaseline) {
+                        ForEach(0..<self.pages.count) { index in
+                            Switcher(isSelected: Binding<Bool>(get: { self.index == index }, set: { _ in }), title: self.pages[index].pageName) {
+                                    self.index = index
+                            }
+                        }
+                        Spacer()
+                    }.padding(.leading)
+                    
+                    SwiperView(pages: self.pages, index: self.$index)
+                        .environmentObject(modelData)
+                        .environmentObject(favorites)
+                        .environmentObject(searches)
+                } else {
+                    HStack {
+                        Text("Stocks")
+                            .bold()
+                            .font(.title)
+                        Spacer()
+                    }.padding(.leading)
+                    
+                    PageView(viewData: PageViewData(pageName: "Search"))
+//                        .onAppear {
+//                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                                self.searches.getLatestInfo(self.searchText)
+//                            }
+//                    }
                 }
-            }
-            .onAppear {
-                self.modelData.getLatestInfo()
-                self.favorites.load()
-                UITableView.appearance().separatorStyle = .none
-            }
+        }
         .navigationBarHidden(true)
         .navigationBarTitle("Stocks")
         }
-    }
 }
 
 struct StockList_Previews: PreviewProvider {
@@ -66,5 +67,7 @@ struct StockList_Previews: PreviewProvider {
         StockList()
             .environmentObject(ModelData())
             .environmentObject(Favorites())
+            .environmentObject(SearchResultData())
     }
+}
 }

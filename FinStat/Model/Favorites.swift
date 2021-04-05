@@ -9,6 +9,13 @@
 import Foundation
 
 class Favorites: ObservableObject {
+    @Published var favorites = [Stock]()
+    
+    let headers = [
+        "x-rapidapi-key": "ff35927267msh3f7dabb094a67e9p1ba5a6jsnd279c449aece",
+        "x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
+    ]
+    
     private static var documentsFolder: URL {
         do {
             return try FileManager.default.url(for: .documentDirectory,
@@ -23,8 +30,7 @@ class Favorites: ObservableObject {
         return documentsFolder.appendingPathComponent("finstat_favorites.data")
     }
     
-    private var stocks: Set<String>
-//    private let saveKey = "Favorites"
+    @Published var stocks: Set<String>
 
     init() {
         self.stocks = []
@@ -48,11 +54,6 @@ class Favorites: ObservableObject {
     func load() {
         DispatchQueue.global(qos: .background).async { [weak self] in
             guard let data = try? Data(contentsOf: Self.fileURL) else {
-                #if DEBUG
-                DispatchQueue.main.async {
-                    self?.stocks = []
-                }
-                #endif
                 return
             }
             guard let savedStocks = try? JSONDecoder().decode(Set<String>.self, from: data) else {
@@ -76,4 +77,63 @@ class Favorites: ObservableObject {
             }
         }
     }
+    
+    func getFavInfo() {
+        
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let data = try? Data(contentsOf: Self.fileURL) else {
+                return
+            }
+            guard let savedStocks = try? JSONDecoder().decode(Set<String>.self, from: data) else {
+                fatalError("Can't decode saved data.")
+            }
+            DispatchQueue.main.async {
+                self?.stocks = savedStocks
+                let path: String = self!.makePathForFav()
+
+                guard let url = URL(string: path) else {
+                    return
+                }
+
+                var request = URLRequest(url: url)
+                request.httpMethod = "GET"
+                request.allHTTPHeaderFields = self?.headers
+                   
+                URLSession.shared.dataTask(with: request, completionHandler:{ (data, response, error) -> Void in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                                          
+                    if let data = data {
+                        DispatchQueue.main.async {
+                            self!.favorites = self!.parseJsonData(data: data)
+                    }
+                    return
+                }
+                }).resume()
+            }
+        }
+    }
+    
+    func parseJsonData(data: Data) -> [Stock] {
+        var stocks = [Stock]()
+        let decoder = JSONDecoder()
+        do {
+            let financeDataStore = try decoder.decode(FinanceDataStore.self, from: data)
+            stocks = financeDataStore.quotes.stocks
+        } catch {
+            print(error)
+        }
+        return stocks
+    }
+    
+    func makePathForFav() -> String {
+           var path: String = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/v2/get-quotes?region=US&symbols="
+           self.stocks.forEach { fav in
+                   path.append(fav)
+                   path.append("%2C")
+               }
+           return path
+       }
 }

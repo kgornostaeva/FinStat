@@ -11,7 +11,6 @@ import SwiftUI
 struct StockRow: View {
     @EnvironmentObject var favorites: Favorites
     var stock: Stock
-    @Binding var color: Bool
 
     var body: some View {
         HStack {
@@ -19,7 +18,10 @@ struct StockRow: View {
                 if self.favorites.contains(self.stock) {
                     self.favorites.remove(self.stock)
                 } else {
-                    self.favorites.add( self.stock)
+                    self.favorites.add(self.stock)
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                        self.favorites.getFavInfo()
+//                    }
                 }
             }
 
@@ -32,30 +34,27 @@ struct StockRow: View {
                     .foregroundColor(Color(red: 0.2, green: 0.17, blue: 0.04))
                 Text(stock.name.capitalized)
                     .font(.footnote)
-                    .foregroundColor(Color(red: 0.69, green: 0.54, blue: 0.01))
+                    .foregroundColor(Color(.systemGray2))
             }
             
             Spacer()
             VStack (alignment: .trailing) {
                 HStack {
-                    Text("\(stock.price, specifier: "%.2f")")
-                    Text("USD")
+                    Text("\(stock.price, specifier: "%.2f") \(stock.currency!)")
                 }
                 .font(.headline)
                 .foregroundColor(Color(red: 0.2, green: 0.17, blue: 0.04))
                 
                 HStack {
-                    Text(stock.change >= 0 ? "+" : "") + Text("\(stock.change, specifier: "%.2f")")
-                    Text("USD")
+                    Text(stock.change >= 0.0000 ? "+" : "") + Text("\(stock.change, specifier: "%.2f") \(stock.currency!)(\(stock.changePercent, specifier: "%.2f")%)")
                 }
                 .font(.footnote)
-                .foregroundColor(stock.change >= 0 ? Color(red: 0.29, green: 0.43, blue: 0.11) : Color.red)
+                .foregroundColor(stock.change >= 0 ? Color.green : Color.red)
             }
         }
         .padding(.horizontal, 10)
         .frame(width: 350, height: 70)
-//        .background(Color(red: 0.99, green: 0.89, blue: 0.51), alignment: .leading)
-            .background(self.color ? Color.clear : Color(.systemGray6))
+            .background(Color(.systemGray6))
         .cornerRadius(15)
     }
 }
@@ -65,7 +64,7 @@ struct StockRow_Previews: PreviewProvider {
     static var stocks = ModelData().stocks
 
     static var previews: some View {
-        StockRow(stock: stocks[0], color: .constant(true))
+        StockRow(stock: stocks[0])
         .environmentObject(Favorites())
     }
 }

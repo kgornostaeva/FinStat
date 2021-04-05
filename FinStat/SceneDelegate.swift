@@ -12,6 +12,7 @@ import SwiftUI
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @State private var modelData = ModelData()
     @State private var favorites = Favorites()
+    @State private var searches = SearchResultData()
     
     var window: UIWindow?
 

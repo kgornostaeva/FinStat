@@ -13,13 +13,17 @@ struct Stock: Codable, Identifiable {
     var name: String
     var id: String
     var price: Double
+    var currency: String?
     var change: Double
+    var changePercent: Double
     
     enum CodingKeys: String, CodingKey {
         case name = "shortName"
         case id = "symbol"
         case price = "regularMarketPrice"
         case change = "regularMarketChange"
+        case changePercent = "regularMarketChangePercent"
+        case currency = "currency"
     }
     
     init(from decoder: Decoder) throws {
@@ -28,7 +32,10 @@ struct Stock: Codable, Identifiable {
         name = try values.decode(String.self, forKey: .name)
         id = try values.decode(String.self, forKey: .id)
         price = try values.decode(Double.self, forKey: .price)
+        currency = try values.decode(String?.self, forKey: .currency)
         change = try values.decode(Double.self, forKey: .change)
+        changePercent = try values.decode(Double.self, forKey: .changePercent)
+
     }
 }
 

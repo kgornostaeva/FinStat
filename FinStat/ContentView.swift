@@ -13,6 +13,7 @@ struct ContentView: View {
         StockList()
         .environmentObject(ModelData())
         .environmentObject(Favorites())
+        .environmentObject(SearchResultData())
     }
 }
 
@@ -21,5 +22,6 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
         .environmentObject(ModelData())
         .environmentObject(Favorites())
+        .environmentObject(SearchResultData())
     }
 }

@@ -1,28 +1,29 @@
 //
-//  ModelData.swift
+//  SearhResult.swift
 //  FinStat
 //
-//  Created by Ekaterina Gornostaewa on 3/25/21.
+//  Created by Ekaterina Gornostaewa on 4/5/21.
 //  Copyright © 2021 Ekaterina Gornostaeva. All rights reserved.
 //
 
 import Foundation
+
 import Combine
 import SwiftUI
 
-
-final class ModelData: ObservableObject {
+final class SearchResultData: ObservableObject {
     @Published var stocks = [Stock]()
-    var trends = [Trend]()
+    var tickers = [SearchResult]()
     
     let headers = [
         "x-rapidapi-key": "ff35927267msh3f7dabb094a67e9p1ba5a6jsnd279c449aece",
         "x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
     ]
     
-    func getLatestInfo() {
-    var path: String =
-     "https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-trending-tickers?region=US"
+    func getLatestInfo(_ searchWord: String) {
+    var path: String = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q="
+    path.append(searchWord)
+    path.append("&region=US")
 
     guard let url = URL(string: path) else {
         return
@@ -40,8 +41,8 @@ final class ModelData: ObservableObject {
 
         if let data = data {
             DispatchQueue.main.async {
-                self.trends = self.parseTrendsJsonData(data: data)
-                path = self.makePathForTrends()
+                self.tickers = self.parseTickersJsonData(data: data)
+                path = self.makePathForTickers()
                 
                 guard let url2 = URL(string: path) else {
                        return
@@ -83,24 +84,24 @@ final class ModelData: ObservableObject {
         return stocks
     }
 
-    func parseTrendsJsonData(data: Data) -> [Trend] {
-        var trends = [Trend]()
+    func parseTickersJsonData(data: Data) -> [SearchResult] {
+        var tickers = [SearchResult]()
         let decoder = JSONDecoder()
         do {
-            let trendsDataStore = try decoder.decode(TrendsDataStore.self, from: data)
-            trends = trendsDataStore.finance.result[0].quotes
+            let tickersDataStore = try decoder.decode(SearchQuotes.self, from: data)
+            tickers = tickersDataStore.quotes
         } catch {
             print(error)
         }
-        return trends
+        return tickers
     }
     
-    func makePathForTrends() -> String {
+    func makePathForTickers() -> String {
         var path: String = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/v2/get-quotes?region=US&symbols="
-        self.trends.forEach { trend in
-            if (trend.type == "EQUITY")
+        self.tickers.forEach { ticker in
+            if (ticker.type == "EQUITY")
             {
-                path.append(trend.id)
+                path.append(ticker.id)
                 path.append("%2C")
             }
         }

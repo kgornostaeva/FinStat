@@ -16,7 +16,7 @@ struct SearchBar: View {
     @State private var isEditing = false
 
     var body: some View {
-        HStack {
+        ZStack {
              TextField("Find company or ticker", text: $text)
                 .autocapitalization(.none)
                 .padding(7)
@@ -38,16 +38,22 @@ struct SearchBar: View {
                 }
 
             if isEditing {
-                Button(action: {
-                    self.isEditing = false
-                    self.text = ""
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                }) {
-                    Text("Cancel")
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        self.isEditing = false
+                        self.text = ""
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }) {
+                        Image(systemName: "multiply.circle.fill")
+                            .foregroundColor(.gray)
+                            .padding(.trailing, 8)
+                    }
+                    .padding(.trailing, 10)
+                    .padding(.horizontal, 10)
+                    .padding(.top, 30)
+                    .animation(.default)
                 }
-                .padding(.trailing, 10)
-                .padding(.top, 30)
-                .animation(.default)
             }
         }
     }
